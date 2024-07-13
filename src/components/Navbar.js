@@ -13,7 +13,7 @@ const Navbar = (props) => {
             <ul className="flex space-x-6">
                 <li><Link to="/" className="text-white text-xl">Home</Link></li>
                 <li><Link to="/login" className="text-white text-xl">Login</Link></li>
-                <li><Link to="/" className="text-white text-xl">Sing-Up</Link></li>
+                <li><Link to="/register" className="text-white text-xl">Sing-Up</Link></li>
             </ul>
         </nav>
     );
