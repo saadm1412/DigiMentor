@@ -1,22 +1,17 @@
-// src/firebase.js
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC2hSyw9K-Jmrvv_zNhH-R2JVCbm98p6XQ",
-  authDomain: "digimentor-355c5.firebaseapp.com",
-  projectId: "digimentor-355c5",
-  storageBucket: "digimentor-355c5.appspot.com",
-  messagingSenderId: "847442900914",
-  appId: "1:847442900914:web:c0e7f150eca32d349516ab",
-  measurementId: "G-2Z7ZPYMVXZ"
+  apiKey: "AIzaSyCnRvVUQWXvMXTtTjVh2igc2GtA1Ryp7-s",
+  authDomain: "digimentor-33349.firebaseapp.com",
+  projectId: "digimentor-33349",
+  storageBucket: "digimentor-33349.appspot.com",
+  messagingSenderId: "517456156361",
+  appId: "1:517456156361:web:b875c5f55c84663e539f18"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+export const app = initializeApp(firebaseConfig);
 
-export { auth, db };
