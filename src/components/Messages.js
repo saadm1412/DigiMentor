@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { app } from '../firebase'; // Import your Firebase configuration
+import { app } from '../firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, Timestamp, getFirestore } from 'firebase/firestore';
+import { IoIosCheckmarkCircle } from 'react-icons/io'; // Import the attendance icon
+import { VscAccount } from "react-icons/vsc";
+
 
 const db = getFirestore(app);
 
@@ -10,6 +13,7 @@ const Messages = () => {
   const { user, batch } = location.state;
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');
+  const [attendanceEnabled, setAttendanceEnabled] = useState(false);
 
   useEffect(() => {
     const q = query(
@@ -29,6 +33,25 @@ const Messages = () => {
     return () => unsubscribe();
   }, [batch]);
 
+  useEffect(() => {
+    const checkAttendanceTime = () => {
+      const now = new Date();
+      const day = now.getDay();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      if (day === 1 && hour === 17 && minute >= 0 && minute <= 59) {
+        setAttendanceEnabled(true);
+      } else {
+        setAttendanceEnabled(false);
+      }
+    };
+
+    checkAttendanceTime(); // Check once when the component mounts
+    const intervalId = setInterval(checkAttendanceTime, 60000); // Check every minute
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   const sendMessage = async () => {
     if (content.trim()) {
       const senderId = user.role === 'student' ? user.prn : user.username;
@@ -40,6 +63,22 @@ const Messages = () => {
         timestamp: Timestamp.now(),
       });
       setContent('');
+    }
+  };
+
+  const markAttendance = async () => {
+    if (attendanceEnabled) {
+      const senderId = user.role === 'student' ? user.prn : user.username;
+      await addDoc(collection(db, 'attendance'), {
+        batch,
+        senderId,
+        senderType: user.role,
+        status: 'present',
+        timestamp: Timestamp.now(),
+      });
+      alert('Attendance marked successfully.');
+    } else {
+      alert('Attendance can only be marked on Mondays from 5 PM to 6 PM.');
     }
   };
 
@@ -62,24 +101,30 @@ const Messages = () => {
           ))}
         </div>
       </div>
-      
-        <div className="flex p-2 bg-slate-600 border-t border-gray-200 mb-40 border-l-black">
+      <footer className="p-2 bg-slate-600">
+        <div className="container mx-auto flex">
           <input
             type="text"
-            className="flex-grow p-2 border rounded mr-2 h-10 resize-none border-1-black"
+            className="flex-grow p-2 border rounded mr-2 h-10 resize-none"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Type your message here"
           />
           <button
-            className="p-2 bg-blue-500 text-white rounded"
+            className="p-2 bg-blue-500 text-white rounded mr-2"
             onClick={sendMessage}
           >
             Send
+          </button> 
+          <button
+            className={`p-2 ${attendanceEnabled ? 'bg-green-500' : 'bg-gray-400'} text-white rounded`}
+            onClick={markAttendance}
+          >
+            <VscAccount></VscAccount>
           </button>
         </div>
-      </div>
-    
+      </footer>
+    </div>
   );
 };
 
